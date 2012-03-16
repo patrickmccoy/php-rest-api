@@ -1,9 +1,9 @@
 <?php
 /**
- * APIResponse Class
+ * Response Class
  * Helper class for Sending API Responses
  */
-class APIResponse {
+class Response {
 
     /**
      * List of all known HTTP response codes - used to
@@ -74,51 +74,151 @@ class APIResponse {
      * @var $response_code
      */
     private $response_code = 200;
+    
+    /**
+     * @var $headers
+     */
+    private $headers = array();
+    
+    /**
+     * @var $headers_sent - boolean
+     */
+    private $headers_sent = false;
+    
+    /**
+     * @var $error
+     */
+    private $error;
 
     /**
      * @var $body
      */
-    private $body;
+    private $body = array();
 
+    /**
+     * Constructor
+     */
     public function __construct() {
-
+        $this->addHeader('Content-type: '. $this->content_type);
     }
 
-    private function send_headers() {
+    /**
+     * Add Headers to send
+     */
+    public function addHeader($header, $replace = true) {
+        if (!$headers_sent) {
+            // if not already in the array, or if in the array but $replace == false, then we add it to the array
+            if (!in_array($header, $this->headers) || (in_array($header, $this->headers) && !$replace)) {
+                $this->headers[] = array(
+                      'header' => $header
+                    , 'replace' => $replace
+                );
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Get an array of headers that are to be sent
+     */
+    public function getHeaders() {
+        return $this->headers;
+    }
+    
+    /**
+     * Set the headers to be sent
+     */
+    private function setHeaders() {
+        // set the HTTP/1.1 header
         header('HTTP/1.1 '. $this->response_code .' '. $this->http_messages[$this->response_code], true, $this->response_code);
-        header('Content-Type: '.$this->content_type, true, $this->response_code);
+        
+        // set the rest of the headers
+        foreach($this->headers as $key => $header) {
+            header($header['header'], $header['replace']);
+        }
+        
+        $this->headers_sent = true;
+        
+        return $this->headers_sent;
+    }
+    
+    /**
+     * Set the content type
+     */
+    public function setContentType($type) {
+        if (is_string($type)) {
+            $this->$content_type = $type;
+            $this->addHeader('Content-type: '. $this->content_type);
+        }
+        return $this->getContentType();
+    }
+    
+    /**
+     * Get Content Type
+     */
+    public function getContentType() {
+        return $this->content_type;
+    }
+    
+    /**
+     * Set Error
+     */
+    public function setError($code, $msg, $details, $http_response_code = false) {
+        $this->error = array(
+              'code' => $code
+            , 'msg' => $msg
+            , 'details' => $details
+        );
+        
+        if ($http_resposne_code != false) {
+            $this->setResponseCode();
+        }
+    }
+    
+    /**
+     * Set the HTTP Response Code
+     */
+    public function setResponseCode($code) {
+        if (in_array($code, array_keys($this->http_messages))) {
+            $this->response_code = $code
+            return $this->getResponseCode();
+        }
+        return false;
+    }
+    
+    /**
+     * Get the HTTP Response Code
+     */
+    public function getResponseCode() {
+        return $this->response_code;
     }
 
-    private function send_body() {
+    /**
+     * send the body of the response
+     */
+    private function sendBody() {
+        // add the errors to the body of the response
+        if (is_array($this->errors)) {
+            $this->body['err'] = $this->errors;
+        }
         echo json_encode($this->body);
     }
 
-    public function send($body) {
+    /**
+     * Compose and send the response
+     */
+    public function send(array $body) {
         $this->body = $body;
 
         // send the headers
         $this->send_headers();
 
         // send the response body
-        $this->send_body();
+        $this->sendBody();
 
         // exit the script
         exit;
     }
-
-    public function sendError($message, $code = 404) {
-        $this->response_code = $code;
-
-        $this->body = array('error'=>array('code'=>$code, 'message'=>$message));
-
-        // send the headers
-        $this->send_headers();
-
-        // send the response body
-        $this->send_body();
-
-        // exit the script
-        exit;
-    }
-
 }
