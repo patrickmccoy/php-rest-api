@@ -7,11 +7,8 @@ require_once dirname(__FILE__).'/APIResponse.class.php';
  * APIController Class
  * handle API Requests and send API responses
  */
-class APIController {
+abstract class APIControllerAbstract {
 
-    protected $_db;
-    protected $_auth;
-    protected $_user;
 
     /**
      * @var $request_method - the HTTP method used
@@ -34,11 +31,6 @@ class APIController {
      * Constructor
      */
     public function __construct() {
-        global $db, $auth, $user;
-        $this->_db = $db;
-        $this->_auth = $auth;
-        $this->_user = $user;
-
         // set the request method
         $this->setRequestMethod();
 
