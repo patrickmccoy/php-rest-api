@@ -173,7 +173,7 @@ class Response {
         );
         
         if ($http_resposne_code != false) {
-            $this->setResponseCode();
+            $this->setResponseCode($http_resposne_code);
         }
     }
     
@@ -200,8 +200,8 @@ class Response {
      */
     private function sendBody() {
         // add the errors to the body of the response
-        if (is_array($this->errors)) {
-            $this->body['err'] = $this->errors;
+        if (is_array($this->error)) {
+            $this->body['err'] = $this->error;
         }
         echo json_encode($this->body);
     }

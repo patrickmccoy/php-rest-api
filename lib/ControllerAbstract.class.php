@@ -1,13 +1,13 @@
 <?php
 
 // include the APIResponse Class
-require_once dirname(__FILE__).'/APIResponse.class.php';
+require_once dirname(__FILE__).'/Response.class.php';
 
 /**
  * APIController Class
  * handle API Requests and send API responses
  */
-abstract class APIControllerAbstract {
+abstract class ControllerAbstract {
 
 
     /**
@@ -34,7 +34,7 @@ abstract class APIControllerAbstract {
         // set the request method
         $this->setRequestMethod();
 
-        $this->response = new APIResponse();
+        $this->response = new Response();
     }
 
     /**
