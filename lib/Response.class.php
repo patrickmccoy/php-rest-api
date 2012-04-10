@@ -213,7 +213,7 @@ class Response {
         $this->body = $body;
 
         // send the headers
-        $this->send_headers();
+        $this->setHeaders();
 
         // send the response body
         $this->sendBody();
