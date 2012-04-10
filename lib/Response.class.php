@@ -106,7 +106,7 @@ class Response {
      * Add Headers to send
      */
     public function addHeader($header, $replace = true) {
-        if (!$headers_sent) {
+        if (!$this->headers_sent) {
             // if not already in the array, or if in the array but $replace == false, then we add it to the array
             if (!in_array($header, $this->headers) || (in_array($header, $this->headers) && !$replace)) {
                 $this->headers[] = array(
