@@ -182,7 +182,7 @@ class Response {
      */
     public function setResponseCode($code) {
         if (in_array($code, array_keys($this->http_messages))) {
-            $this->response_code = $code
+            $this->response_code = $code;
             return $this->getResponseCode();
         }
         return false;
