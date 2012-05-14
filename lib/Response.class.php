@@ -172,8 +172,8 @@ class Response {
             , 'details' => $details
         );
         
-        if ($http_resposne_code != false) {
-            $this->setResponseCode($http_resposne_code);
+        if ($http_response_code != false) {
+            $this->setResponseCode($http_response_code);
         }
     }
     
